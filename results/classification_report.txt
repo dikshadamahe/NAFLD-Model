@@ -8,3 +8,11 @@ Classification Report — AdaBoost
     accuracy                           0.88      2777
    macro avg       0.84      0.85      0.84      2777
 weighted avg       0.88      0.88      0.88      2777
+
+
+Sensitivity (Recall) : 0.7997
+Specificity          : 0.9064
+Precision (PPV)      : 0.7400
+NPV                  : 0.9314
+F1-score             : 0.7687
+Accuracy             : 0.8797

@@ -1,0 +1,2 @@
+Model_1,Model_2,Chi2,p_value,Significant,b (M1✓ M2✗),c (M1✗ M2✓)
+AdaBoost,Gradient Boosting,0.140625,0.7076604666545525,False,34,30
