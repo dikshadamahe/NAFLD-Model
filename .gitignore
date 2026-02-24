@@ -1,0 +1,80 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.manifest
+*.spec
+
+# ===========================
+# Virtual Environments
+# ===========================
+venv/
+env/
+.venv/
+.env
+
+# ===========================
+# Jupyter Notebooks
+# ===========================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+*.code-workspace
+
+# ===========================
+# macOS
+# ===========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ===========================
+# Data (large raw files)
+# ===========================
+data/*.xpt
+data/*.csv
+data/*.xlsx
+data/*.sas7bdat
+!data/.gitkeep
+
+# ===========================
+# Model Artifacts
+# ===========================
+models/*.pkl
+!models/.gitkeep
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+
+# ===========================
+# IDE / Editor
+# ===========================
+.idea/
+*.swp
+*.swo
+*~
+
+# ===========================
+# Distribution / Packaging
+# ===========================
+*.tar.gz
+*.whl
+
+# CatBoost training artifacts
+catboost_info/
