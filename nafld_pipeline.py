@@ -6,8 +6,9 @@ Using Clinical and Lifestyle Data
 Complete research-grade ML pipeline — 24 classifiers.
 Publication-quality code for IEEE / Springer submission.
 
-Dataset : NHANES DEMO_J.xpt
-Target  : disease (binary 0/1) — derived if absent in raw file.
+Dataset : data/nafld_final_dataset.csv (6 NHANES datasets merged on SEQN)
+          Run src/build_nafld_dataset.py first to produce this file.
+Target  : NAFLD (binary 0/1)
 =============================================================================
 """
 
@@ -58,6 +59,7 @@ from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 from imblearn.over_sampling import SMOTE
+import shap
 
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
@@ -69,22 +71,14 @@ from sklearn.metrics import (
 SEED          = 42
 TEST_SIZE     = 0.30
 N_FOLDS       = 5
-TARGET        = "disease"
-DATA_PATH     = os.path.join("data", "DEMO_J.xpt")
+TARGET        = "NAFLD"
+DATA_PATH     = os.path.join("data", "nafld_final_dataset.csv")
 MODEL_PATH    = os.path.join("models", "best_nafld_model.pkl")
 FIG_DIR       = "figures"
 RES_DIR       = "results"
 
-# Columns to drop (IDs, survey weights, scheduling, language/proxy flags)
-DROP_COLS = [
-    "SEQN", "SDDSRVYR", "RIDSTATR",
-    "WTINT2YR", "WTMEC2YR", "SDMVPSU", "SDMVSTRA",
-    "RIDAGEMN", "RIDEXAGM", "RIDEXMON",
-    "SIALANG", "SIAPROXY", "SIAINTRP",
-    "FIALANG", "FIAPROXY", "FIAINTRP",
-    "MIALANG", "MIAPROXY", "MIAINTRP",
-    "AIALANGA",
-]
+# Columns to drop (none needed — build_nafld_dataset.py already cleaned the data)
+DROP_COLS = []
 
 np.random.seed(SEED)
 for d in [FIG_DIR, RES_DIR, "models"]:
@@ -95,12 +89,12 @@ for d in [FIG_DIR, RES_DIR, "models"]:
 # STEP 1 — DATA LOADING
 # ═══════════════════════════════════════════════════════════════════════════
 def load_data():
-    """Load DEMO_J.xpt, drop survey-design cols, prepare target."""
+    """Load merged NHANES CSV, drop ID cols, prepare target."""
     print("=" * 72)
     print("STEP 1 : DATA LOADING")
     print("=" * 72)
 
-    df = pd.read_sas(DATA_PATH, format="xport", encoding="utf-8")
+    df = pd.read_csv(DATA_PATH)
     print(f"  Raw shape   : {df.shape}")
     print(f"  Columns     : {list(df.columns)}\n")
     print(df.head())
@@ -117,15 +111,17 @@ def load_data():
         print("     (Replace with clinical NAFLD labels for publication.)\n")
         np.random.seed(SEED)
         score = np.zeros(len(df))
-        if "RIDAGEYR" in df.columns:
-            score += (df["RIDAGEYR"].fillna(0) >= 45).astype(float) * 0.35
-        if "RIAGENDR" in df.columns:
-            score += (df["RIAGENDR"].fillna(0) == 1).astype(float) * 0.15
-        if "INDFMPIR" in df.columns:
-            score += (df["INDFMPIR"].fillna(5) < 1.5).astype(float) * 0.15
-        if "DMDEDUC2" in df.columns:
-            score += (df["DMDEDUC2"].fillna(3) <= 2).astype(float) * 0.10
-        score += np.random.uniform(0, 0.4, len(df))
+        if "Age" in df.columns:
+            score += (df["Age"].fillna(0) >= 45).astype(float) * 0.35
+        if "Gender" in df.columns:
+            score += (df["Gender"].fillna(0) == 1).astype(float) * 0.15
+        if "BMI" in df.columns:
+            score += (df["BMI"].fillna(0) >= 30).astype(float) * 0.20
+        if "Glucose" in df.columns:
+            score += (df["Glucose"].fillna(0) >= 126).astype(float) * 0.15
+        if "ALT" in df.columns:
+            score += (df["ALT"].fillna(0) >= 40).astype(float) * 0.15
+        score += np.random.uniform(0, 0.2, len(df))
         df[TARGET] = (score >= np.percentile(score, 75)).astype(int)
 
     df.dropna(subset=[TARGET], inplace=True)
@@ -222,7 +218,7 @@ def get_models():
         "Bagging Classifier":        BaggingClassifier(n_estimators=200, random_state=SEED, n_jobs=-1),
         "SGD Classifier":            _wrap(SGDClassifier(max_iter=5000, random_state=SEED, class_weight="balanced", loss="modified_huber")),
         "Perceptron":                _wrap(Perceptron(max_iter=5000, random_state=SEED, class_weight="balanced")),
-        "Passive Aggressive":        _wrap(SGDClassifier(loss="hinge", penalty=None, learning_rate="constant", eta0=1.0, max_iter=5000, random_state=SEED, class_weight="balanced")),
+        "Passive Aggressive":        _wrap(PassiveAggressiveClassifier(max_iter=5000, random_state=SEED, class_weight="balanced")),
         "QDA":                       QuadraticDiscriminantAnalysis(reg_param=0.5),
         "LDA":                       LinearDiscriminantAnalysis(),
         "MLP Classifier":            MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=1000, random_state=SEED, early_stopping=True),
@@ -490,7 +486,68 @@ def best_report(ranked, fitted, Xte, yte):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# STEP 9 — BEST MODEL SELECTION + SAVE
+# STEP 9 — SHAP EXPLAINABILITY (best model)
+# ═══════════════════════════════════════════════════════════════════════════
+def shap_explain(ranked, fitted, Xte, feat_names):
+    """SHAP summary + bar plot for the best model."""
+    print("\n" + "=" * 72)
+    print("STEP 9 : SHAP EXPLAINABILITY  (best model)")
+    print("=" * 72)
+
+    name = ranked.iloc[0]["Model"]
+    mdl  = fitted[name]
+    print(f"  Explaining: {name}")
+
+    # Use a background sample for speed (100 rows)
+    bg = Xte[:100] if len(Xte) > 100 else Xte
+
+    # Choose appropriate explainer
+    tree_models = {
+        "Random Forest", "Extra Trees", "Decision Tree",
+        "Gradient Boosting", "XGBoost", "LightGBM", "CatBoost",
+        "Hist Gradient Boosting",
+    }
+    if name in tree_models:
+        explainer = shap.TreeExplainer(mdl)
+        shap_values = explainer.shap_values(Xte)
+        # For binary classification some explainers return a list
+        if isinstance(shap_values, list):
+            shap_values = shap_values[1]
+    else:
+        explainer = shap.KernelExplainer(mdl.predict_proba, bg)
+        shap_values = explainer.shap_values(Xte[:200], nsamples=100)
+        if isinstance(shap_values, list):
+            shap_values = shap_values[1]
+
+    # Convert to DataFrame-like for feature names
+    n_feats = min(shap_values.shape[1], len(feat_names))
+    fn = feat_names[:n_feats]
+
+    # SHAP summary plot (beeswarm)
+    plt.figure(figsize=(12, 8))
+    shap.summary_plot(shap_values[:, :n_feats], Xte[:, :n_feats],
+                      feature_names=fn, show=False)
+    plt.title(f"SHAP Summary — {name}", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    p1 = os.path.join(FIG_DIR, "shap_summary.png")
+    plt.savefig(p1, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved → {p1}")
+
+    # SHAP bar plot (mean absolute)
+    plt.figure(figsize=(10, 7))
+    shap.summary_plot(shap_values[:, :n_feats], Xte[:, :n_feats],
+                      feature_names=fn, plot_type="bar", show=False)
+    plt.title(f"SHAP Feature Importance — {name}", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    p2 = os.path.join(FIG_DIR, "shap_bar.png")
+    plt.savefig(p2, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved → {p2}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# STEP 10 — BEST MODEL SELECTION + SAVE
 # ═══════════════════════════════════════════════════════════════════════════
 def save_best(ranked, fitted, Xtr, ytr):
     """Retrain best model on full training data and serialise."""
@@ -568,7 +625,10 @@ def main():
     best_report(ranked, fitted, Xte_p, yte)
     plot_comparison_chart(ranked)
 
-    # 9  Save best
+    # 9  SHAP explainability
+    shap_explain(ranked, fitted, Xte_p, fn)
+
+    # 10  Save best
     bname, bauc = save_best(ranked, fitted, Xtr_s, ytr_s)
 
     # ── Final summary ──────────────────────────────────────────────────
@@ -583,6 +643,8 @@ def main():
     print(f"    • confusion_matrices_top5.png")
     print(f"    • model_comparison_chart.png")
     print(f"    • feature_importance_*.png")
+    print(f"    • shap_summary.png")
+    print(f"    • shap_bar.png")
     print(f"  Results     : {RES_DIR}/")
     print(f"    • model_comparison.csv")
     print(f"    • classification_report.txt")

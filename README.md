@@ -1,4 +1,4 @@
-# Machine Learning-Based Prediction of Non-Alcoholic Fatty Liver Disease (NAFLD)
+'''''# Machine Learning-Based Prediction of Non-Alcoholic Fatty Liver Disease (NAFLD)
 
 ## Using Clinical and Lifestyle Data
 
@@ -12,12 +12,29 @@
 
 This project implements a comprehensive machine learning pipeline for predicting NAFLD using 24 classification algorithms. The pipeline follows a rigorous, reproducible methodology suitable for IEEE/Springer publication.
 
+### Data Sources
+
+The project uses **6 NHANES 2017–2018 datasets**, merged on the common participant identifier `SEQN`:
+
+| Dataset | Description | Features Extracted |
+|---------|-------------|--------------------|
+| `DEMO_J.xpt` | Demographics | Age, Gender, Ethnicity |
+| `BMX_J.xpt` | Body Measurements | BMI, Waist Circumference |
+| `TRIGLY_J.xpt` | Triglycerides | Triglycerides, LDL Cholesterol |
+| `HDL_J.xpt` | HDL Cholesterol | HDL Cholesterol |
+| `GLU_J.xpt` | Fasting Glucose | Glucose |
+| `BIOPRO_J.xpt` | Standard Biochemistry Profile | ALT, AST, Total Cholesterol |
+
 ### Pipeline Architecture
 
 ```
-Raw Dataset (DEMO_J.xpt)
+6 NHANES .xpt Datasets
     ↓
-Data Cleaning (median/mode imputation)
+merge_nhanes_datasets.py
+    ↓  (merge on SEQN, select 12 health features, handle missing values)
+Merged Dataset (data/merged_nhanes_dataset.csv)
+    ↓
+nafld_pipeline.py
     ↓
 Feature Encoding (OneHotEncoder)
     ↓
@@ -63,14 +80,22 @@ Feature Importance + ROC Curves
 
 ```
 NAFLD-Model/
+├── merge_nhanes_datasets.py   # Dataset merger (6 NHANES → 1 CSV)
 ├── nafld_pipeline.py          # Main ML pipeline (all 24 models)
+├── nafld_research_analysis.py # Extended research analysis suite
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This file
 ├── push_changes.sh            # Safe git push script
 ├── git_workflow.md            # Git branching & tagging reference
 ├── .gitignore                 # Research-safe gitignore
 ├── data/
-│   └── DEMO_J.xpt            # Raw NHANES dataset (excluded from git)
+│   ├── DEMO_J.xpt            # NHANES Demographics
+│   ├── BMX_J.xpt             # NHANES Body Measurements
+│   ├── TRIGLY_J.xpt          # NHANES Triglycerides
+│   ├── HDL_J.xpt             # NHANES HDL Cholesterol
+│   ├── GLU_J.xpt             # NHANES Fasting Glucose
+│   ├── BIOPRO_J.xpt          # NHANES Biochemistry Profile (ALT, AST)
+│   └── merged_nhanes_dataset.csv  # Final merged dataset (2,843 × 13)
 ├── models/
 │   └── best_nafld_model.pkl   # Serialized best model (excluded from git)
 ├── figures/
@@ -103,23 +128,42 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Place Dataset
+### 3. Place Datasets
 
-Place `DEMO_J.xpt` inside the `data/` directory:
+Place all 6 NHANES `.xpt` files inside the `data/` directory:
 ```bash
 cp /path/to/DEMO_J.xpt data/
+cp /path/to/BMX_J.xpt data/
+cp /path/to/TRIGLY_J.xpt data/
+cp /path/to/HDL_J.xpt data/
+cp /path/to/GLU_J.xpt data/
+cp /path/to/BIOPRO_J.xpt data/
 ```
 
-### 4. Run the Pipeline
+### 4. Merge Datasets
+
+```bash
+python3 merge_nhanes_datasets.py
+```
+This merges all 6 datasets on `SEQN`, selects 12 health features, handles missing values, and outputs `data/merged_nhanes_dataset.csv`.
+
+### 5. Run the ML Pipeline
 
 ```bash
 python3 nafld_pipeline.py
 ```
 
-### 5. Outputs
+### 6. Run Research Analysis (optional)
+
+```bash
+python3 nafld_research_analysis.py
+```
+
+### 7. Outputs
 
 | Output | Location |
 |--------|----------|
+| Merged dataset | `data/merged_nhanes_dataset.csv` |
 | Ranked comparison table | `results/model_comparison.csv` |
 | ROC curves (top 5) | `figures/roc_curves_top5.png` |
 | Feature importance plots | `figures/feature_importance_*.png` |
@@ -129,6 +173,9 @@ python3 nafld_pipeline.py
 
 ## Key Design Decisions
 
+- **Multi-dataset integration**: 6 NHANES datasets merged on `SEQN` with inner join (complete records only).
+- **12 clinically relevant features**: Age, Gender, Ethnicity, BMI, Waist Circumference, Total Cholesterol, LDL, HDL, Triglycerides, ALT, AST, Glucose.
+- **Missing value handling**: Rows with >50% missing features dropped; remaining imputed with median.
 - **No data leakage**: SMOTE applied only on training set after split.
 - **ColumnTransformer**: Separate pipelines for numerical (median impute → scale) and categorical (mode impute → one-hot encode) features.
 - **Class imbalance**: Dual strategy — SMOTE + `class_weight='balanced'` where supported.

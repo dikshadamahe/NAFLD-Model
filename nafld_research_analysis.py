@@ -78,21 +78,13 @@ from sklearn.metrics import (
 SEED       = 42
 TEST_SIZE  = 0.30
 N_FOLDS    = 5
-TARGET     = "disease"
-DATA_PATH  = os.path.join("data", "DEMO_J.xpt")
+TARGET     = "NAFLD"
+DATA_PATH  = os.path.join("data", "nafld_final_dataset.csv")
 FIG_DIR    = "figures"
 RES_DIR    = "results"
 MDL_DIR    = "models"
 
-DROP_COLS  = [
-    "SEQN","SDDSRVYR","RIDSTATR",
-    "WTINT2YR","WTMEC2YR","SDMVPSU","SDMVSTRA",
-    "RIDAGEMN","RIDEXAGM","RIDEXMON",
-    "SIALANG","SIAPROXY","SIAINTRP",
-    "FIALANG","FIAPROXY","FIAINTRP",
-    "MIALANG","MIAPROXY","MIAINTRP",
-    "AIALANGA",
-]
+DROP_COLS  = []
 
 np.random.seed(SEED)
 for d in [FIG_DIR, RES_DIR, MDL_DIR]:
@@ -117,22 +109,24 @@ plt.rcParams.update({
 #  DATA  LOADING  &  PREPROCESSING  (reused from pipeline)
 # ═══════════════════════════════════════════════════════════════════════════
 def load_data():
-    df = pd.read_sas(DATA_PATH, format="xport", encoding="utf-8")
+    df = pd.read_csv(DATA_PATH)
     to_drop = [c for c in DROP_COLS if c in df.columns]
     df.drop(columns=to_drop, inplace=True)
 
     if TARGET not in df.columns:
         np.random.seed(SEED)
         score = np.zeros(len(df))
-        if "RIDAGEYR" in df.columns:
-            score += (df["RIDAGEYR"].fillna(0) >= 45).astype(float) * 0.35
-        if "RIAGENDR" in df.columns:
-            score += (df["RIAGENDR"].fillna(0) == 1).astype(float) * 0.15
-        if "INDFMPIR" in df.columns:
-            score += (df["INDFMPIR"].fillna(5) < 1.5).astype(float) * 0.15
-        if "DMDEDUC2" in df.columns:
-            score += (df["DMDEDUC2"].fillna(3) <= 2).astype(float) * 0.10
-        score += np.random.uniform(0, 0.4, len(df))
+        if "Age" in df.columns:
+            score += (df["Age"].fillna(0) >= 45).astype(float) * 0.35
+        if "Gender" in df.columns:
+            score += (df["Gender"].fillna(0) == 1).astype(float) * 0.15
+        if "BMI" in df.columns:
+            score += (df["BMI"].fillna(0) >= 30).astype(float) * 0.20
+        if "Glucose" in df.columns:
+            score += (df["Glucose"].fillna(0) >= 126).astype(float) * 0.15
+        if "ALT" in df.columns:
+            score += (df["ALT"].fillna(0) >= 40).astype(float) * 0.15
+        score += np.random.uniform(0, 0.2, len(df))
         df[TARGET] = (score >= np.percentile(score, 75)).astype(int)
 
     df.dropna(subset=[TARGET], inplace=True)
