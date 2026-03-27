@@ -1,0 +1,14 @@
+train_test_split: 0.7
+cross_validation_folds: 5
+random_seed: 42
+
+balancing:
+  method: SMOTE
+  applied_to: training_only
+
+evaluation_metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1
+  - roc_auc

@@ -1,0 +1,197 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{younossi2016global}
+\citation{chalasani2018diagnosis}
+\citation{lazarus2022advancing}
+\citation{bravo2001liver}
+\citation{hernaez2011diagnostic}
+\citation{mcpherson2010simple}
+\citation{singal2013machine}
+\citation{ma2021application}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:introduction}{{I}{1}{Introduction}{section.1}{}}
+\citation{curtin2012nhanes}
+\citation{younossi2016global}
+\citation{kotronen2009prediction}
+\citation{lee2010hepatic}
+\citation{ma2021application}
+\citation{atsawarungruangkit2021machine}
+\citation{islam2022machine}
+\citation{yip2023laboratory}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Motivation and Contributions}{2}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-B}}Paper Organization}{2}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related_work}{{II}{2}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Traditional Statistical Approaches}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Machine Learning Approaches}{2}{subsection.2.2}\protected@file@percent }
+\citation{perveen2018metabolic}
+\citation{deo2019machine}
+\citation{sowa2021machine}
+\citation{zheng2022machine}
+\citation{wu2023comprehensive}
+\citation{kotronen2009prediction}
+\citation{lee2010hepatic}
+\citation{perveen2018metabolic}
+\citation{ma2021application}
+\citation{atsawarungruangkit2021machine}
+\citation{islam2022machine}
+\citation{zheng2022machine}
+\citation{wu2023comprehensive}
+\citation{yip2023laboratory}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Comparison with Prior Studies on NAFLD Prediction Using Machine Learning}}{3}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:literature}{{I}{3}{Comparison with Prior Studies on NAFLD Prediction Using Machine Learning}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}NHANES-Based Studies}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}Comparative Studies}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-E}}Literature Comparison Summary}{3}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Methodology}{3}{section.3}\protected@file@percent }
+\newlabel{sec:methodology}{{III}{3}{Methodology}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Methodology Overview}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{subsec:methodology_overview}{{\mbox  {III-A}}{3}{Methodology Overview}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Dataset}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{subsec:dataset}{{\mbox  {III-B}}{3}{Dataset}{subsection.3.2}{}}
+\citation{younossi2016global}
+\citation{younossi2016global,chalasani2018diagnosis}
+\citation{younossi2016global}
+\citation{chalasani2018diagnosis}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Dataset Characteristics}}{4}{table.caption.2}\protected@file@percent }
+\newlabel{tab:dataset}{{II}{4}{Dataset Characteristics}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Proxy NAFLD Risk Label Construction}{4}{subsection.3.3}\protected@file@percent }
+\newlabel{subsec:proxy_label}{{\mbox  {III-C}}{4}{Proxy NAFLD Risk Label Construction}{subsection.3.3}{}}
+\newlabel{eq:risk_score}{{1}{4}{Proxy NAFLD Risk Label Construction}{equation.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Data Preprocessing Pipeline}{4}{subsection.3.4}\protected@file@percent }
+\newlabel{subsec:preprocessing}{{\mbox  {III-D}}{4}{Data Preprocessing Pipeline}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-D}1}Column Removal}{4}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-D}2}Feature Type Detection}{4}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-D}3}Missing Value Imputation}{4}{subsubsection.3.4.3}\protected@file@percent }
+\citation{chawla2002smote}
+\citation{santos2018cross}
+\citation{chen2016xgboost}
+\citation{ke2017lightgbm}
+\citation{prokhorenkova2018catboost}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Dataset Preprocessing and Splitting}}{5}{algorithm.1}\protected@file@percent }
+\newlabel{alg:preprocessing}{{1}{5}{Dataset Preprocessing and Splitting}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-D}4}Feature Encoding and Scaling}{5}{subsubsection.3.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-D}5}Class Imbalance Handling with SMOTE}{5}{subsubsection.3.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Classification Algorithms}{5}{subsection.3.5}\protected@file@percent }
+\newlabel{subsec:models}{{\mbox  {III-E}}{5}{Classification Algorithms}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}1}Linear Models}{5}{subsubsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}2}Tree-based Methods}{5}{subsubsection.3.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}3}Gradient Boosting Methods}{5}{subsubsection.3.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}4}Support Vector Machines}{5}{subsubsection.3.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}5}Probabilistic Classifiers}{5}{subsubsection.3.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}6}Neural Network}{5}{subsubsection.3.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {III-E}7}Meta-Ensemble}{5}{subsubsection.3.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-F}}Model Training Pipeline}{5}{subsection.3.6}\protected@file@percent }
+\newlabel{subsec:training}{{\mbox  {III-F}}{5}{Model Training Pipeline}{subsection.3.6}{}}
+\citation{fawcett2006introduction}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Classification Algorithms and Key Hyperparameters}}{6}{table.caption.3}\protected@file@percent }
+\newlabel{tab:hyperparameters}{{III}{6}{Classification Algorithms and Key Hyperparameters}{table.caption.3}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces NAFLD Model Training Pipeline}}{6}{algorithm.2}\protected@file@percent }
+\newlabel{alg:training}{{2}{6}{NAFLD Model Training Pipeline}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-G}}NAFLD Prediction Pipeline}{6}{subsection.3.7}\protected@file@percent }
+\newlabel{subsec:prediction}{{\mbox  {III-G}}{6}{NAFLD Prediction Pipeline}{subsection.3.7}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces NAFLD Prediction Pipeline}}{6}{algorithm.3}\protected@file@percent }
+\newlabel{alg:prediction}{{3}{6}{NAFLD Prediction Pipeline}{algorithm.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-H}}Evaluation Metrics}{6}{subsection.3.8}\protected@file@percent }
+\newlabel{subsec:metrics}{{\mbox  {III-H}}{6}{Evaluation Metrics}{subsection.3.8}{}}
+\citation{mcnemar1947note}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-I}}Statistical Testing: McNemar's Test}{7}{subsection.3.9}\protected@file@percent }
+\newlabel{subsec:mcnemar}{{\mbox  {III-I}}{7}{Statistical Testing: McNemar's Test}{subsection.3.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Experiments and Results}{7}{section.4}\protected@file@percent }
+\newlabel{sec:experiments}{{IV}{7}{Experiments and Results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Model Performance Comparison}{7}{subsection.4.1}\protected@file@percent }
+\newlabel{subsec:model_comparison}{{\mbox  {IV-A}}{7}{Model Performance Comparison}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Cross-Validation Analysis}{7}{subsection.4.2}\protected@file@percent }
+\newlabel{subsec:cv_analysis}{{\mbox  {IV-B}}{7}{Cross-Validation Analysis}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}ROC Curve Analysis}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:roc}{{\mbox  {IV-C}}{7}{ROC Curve Analysis}{subsection.4.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Complete Model Performance Comparison (Ranked by Test ROC-AUC)}}{8}{table.caption.4}\protected@file@percent }
+\newlabel{tab:model_comparison}{{IV}{8}{Complete Model Performance Comparison (Ranked by Test ROC-AUC)}{table.caption.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Cross-Validation vs. Test Performance (Top 10 Models)}}{8}{table.caption.5}\protected@file@percent }
+\newlabel{tab:cv_results}{{V}{8}{Cross-Validation vs. Test Performance (Top 10 Models)}{table.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}Best Model Analysis: Random Forest}{8}{subsection.4.4}\protected@file@percent }
+\newlabel{subsec:best_model}{{\mbox  {IV-D}}{8}{Best Model Analysis: Random Forest}{subsection.4.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ROC curves for the top 5 classification models. Random Forest achieves the highest AUC (0.9644), followed closely by Gradient Boosting (0.9638), CatBoost (0.9632), XGBoost (0.9631), and Histogram Gradient Boosting (0.9630). The diagonal dashed line represents random classification (AUC = 0.5).}}{9}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:roc_curves}{{1}{9}{ROC curves for the top 5 classification models. Random Forest achieves the highest AUC (0.9644), followed closely by Gradient Boosting (0.9638), CatBoost (0.9632), XGBoost (0.9631), and Histogram Gradient Boosting (0.9630). The diagonal dashed line represents random classification (AUC = 0.5)}{figure.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Detailed Performance Metrics for Random Forest (Best Model)}}{9}{table.caption.7}\protected@file@percent }
+\newlabel{tab:best_model_metrics}{{VI}{9}{Detailed Performance Metrics for Random Forest (Best Model)}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Confusion Matrix Analysis}{9}{subsection.4.5}\protected@file@percent }
+\newlabel{subsec:confusion_matrix}{{\mbox  {IV-E}}{9}{Confusion Matrix Analysis}{subsection.4.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Statistical Comparison: McNemar's Test}{9}{subsection.4.6}\protected@file@percent }
+\newlabel{subsec:mcnemar_results}{{\mbox  {IV-F}}{9}{Statistical Comparison: McNemar's Test}{subsection.4.6}{}}
+\citation{younossi2016global}
+\citation{chalasani2018diagnosis}
+\citation{chalasani2018diagnosis}
+\citation{lundberg2017unified}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Confusion matrix for Random Forest (best model) on the test set ($n = 853$). The model correctly classifies 582 true negatives and 179 true positives, with 58 false positives and 34 false negatives.}}{10}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:confusion_matrix}{{2}{10}{Confusion matrix for Random Forest (best model) on the test set ($n = 853$). The model correctly classifies 582 true negatives and 179 true positives, with 58 false positives and 34 false negatives}{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VII}{\ignorespaces McNemar's Test: Random Forest vs. Gradient Boosting}}{10}{table.caption.9}\protected@file@percent }
+\newlabel{tab:mcnemar}{{VII}{10}{McNemar's Test: Random Forest vs. Gradient Boosting}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-G}}Visual Model Comparison}{10}{subsection.4.7}\protected@file@percent }
+\newlabel{subsec:model_chart}{{\mbox  {IV-G}}{10}{Visual Model Comparison}{subsection.4.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-H}}Feature Importance Analysis}{10}{subsection.4.8}\protected@file@percent }
+\newlabel{subsec:feature_importance}{{\mbox  {IV-H}}{10}{Feature Importance Analysis}{subsection.4.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-I}}SHAP Explainability Analysis}{10}{subsection.4.9}\protected@file@percent }
+\newlabel{subsec:shap}{{\mbox  {IV-I}}{10}{SHAP Explainability Analysis}{subsection.4.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-I}1}SHAP Summary Plot}{10}{subsubsection.4.9.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Test ROC-AUC comparison across all 24 classification algorithms. Ensemble tree-based methods consistently outperform other algorithmic families.}}{11}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:model_comparison_chart}{{3}{11}{Test ROC-AUC comparison across all 24 classification algorithms. Ensemble tree-based methods consistently outperform other algorithmic families}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Cross-model feature importance comparison. Features that rank highly across multiple models represent robust clinical predictors of NAFLD.}}{11}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:fi_comparison}{{4}{11}{Cross-model feature importance comparison. Features that rank highly across multiple models represent robust clinical predictors of NAFLD}{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces SHAP summary plot for Random Forest (best model). Features are ranked by mean absolute SHAP value. The plot reveals both the magnitude and direction of feature effects on NAFLD predictions.}}{11}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:shap_summary}{{5}{11}{SHAP summary plot for Random Forest (best model). Features are ranked by mean absolute SHAP value. The plot reveals both the magnitude and direction of feature effects on NAFLD predictions}{figure.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VIII}{\ignorespaces Interpretable Model Comparison: Full Random Forest vs. 5-Feature Logistic Regression}}{12}{table.caption.13}\protected@file@percent }
+\newlabel{tab:interpretable}{{VIII}{12}{Interpretable Model Comparison: Full Random Forest vs. 5-Feature Logistic Regression}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-J}}Interpretable Simple Model}{12}{subsection.4.10}\protected@file@percent }
+\newlabel{subsec:interpretable}{{\mbox  {IV-J}}{12}{Interpretable Simple Model}{subsection.4.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Discussion}{12}{section.5}\protected@file@percent }
+\newlabel{sec:discussion}{{V}{12}{Discussion}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Implications for Population Screening}{12}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Algorithmic Insights}{12}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {V-B}1}Dominance of Ensemble Tree-Based Methods}{12}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {V-B}2}Random Forest as Top Performer}{12}{subsubsection.5.2.2}\protected@file@percent }
+\citation{shwartz2017opening}
+\citation{younossi2016global,chalasani2018diagnosis}
+\citation{santos2018cross}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {V-B}3}Statistical Equivalence of Top Models}{13}{subsubsection.5.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {V-B}4}Underperformance of Neural Networks}{13}{subsubsection.5.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {V-B}5}Consistent Feature Identification}{13}{subsubsection.5.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Methodological Strengths}{13}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Limitations}{13}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-E}}Future Directions}{14}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{14}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{VI}{14}{Conclusion}{section.6}{}}
+\bibcite{younossi2016global}{1}
+\bibcite{chalasani2018diagnosis}{2}
+\bibcite{lazarus2022advancing}{3}
+\bibcite{bravo2001liver}{4}
+\bibcite{hernaez2011diagnostic}{5}
+\bibcite{mcpherson2010simple}{6}
+\bibcite{singal2013machine}{7}
+\bibcite{ma2021application}{8}
+\bibcite{curtin2012nhanes}{9}
+\bibcite{kotronen2009prediction}{10}
+\bibcite{lee2010hepatic}{11}
+\bibcite{atsawarungruangkit2021machine}{12}
+\bibcite{islam2022machine}{13}
+\bibcite{yip2023laboratory}{14}
+\bibcite{perveen2018metabolic}{15}
+\bibcite{deo2019machine}{16}
+\bibcite{sowa2021machine}{17}
+\bibcite{zheng2022machine}{18}
+\bibcite{wu2023comprehensive}{19}
+\bibcite{chawla2002smote}{20}
+\bibcite{santos2018cross}{21}
+\bibcite{chen2016xgboost}{22}
+\bibcite{ke2017lightgbm}{23}
+\bibcite{prokhorenkova2018catboost}{24}
+\bibcite{fawcett2006introduction}{25}
+\bibcite{lundberg2017unified}{26}
+\bibcite{freund1997decision}{27}
+\bibcite{mcnemar1947note}{28}
+\bibcite{shwartz2017opening}{29}
+\@writefile{toc}{\contentsline {section}{References}{15}{section*.14}\protected@file@percent }
+\gdef \@abspage@last{15}
