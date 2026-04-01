@@ -59,6 +59,7 @@ from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline as ImbPipeline
 import shap
 
 from sklearn.metrics import (
@@ -72,7 +73,10 @@ SEED          = 42
 TEST_SIZE     = 0.30
 N_FOLDS       = 5
 TARGET        = "NAFLD"
-DATA_PATH     = os.path.join("data", "nafld_final_dataset.csv")
+DATA_PATHS    = [
+    os.path.join("data", "nafld_final_dataset.csv"),
+    os.path.join("data", "merged_nhanes_dataset.csv"),
+]
 MODEL_PATH    = os.path.join("models", "best_nafld_model.pkl")
 FIG_DIR       = "figures"
 RES_DIR       = "results"
@@ -94,7 +98,14 @@ def load_data():
     print("STEP 1 : DATA LOADING")
     print("=" * 72)
 
-    df = pd.read_csv(DATA_PATH)
+    data_path = next((p for p in DATA_PATHS if os.path.exists(p)), None)
+    if data_path is None:
+        raise FileNotFoundError(
+            f"No dataset found. Tried: {DATA_PATHS}"
+        )
+
+    df = pd.read_csv(data_path)
+    print(f"  Dataset path: {data_path}")
     print(f"  Raw shape   : {df.shape}")
     print(f"  Columns     : {list(df.columns)}\n")
     print(df.head())
@@ -107,22 +118,10 @@ def load_data():
 
     # ── Target handling ────────────────────────────────────────────────
     if TARGET not in df.columns:
-        print(f"  ⚠  '{TARGET}' column NOT in dataset — deriving proxy target.")
-        print("     (Replace with clinical NAFLD labels for publication.)\n")
-        np.random.seed(SEED)
-        score = np.zeros(len(df))
-        if "Age" in df.columns:
-            score += (df["Age"].fillna(0) >= 45).astype(float) * 0.35
-        if "Gender" in df.columns:
-            score += (df["Gender"].fillna(0) == 1).astype(float) * 0.15
-        if "BMI" in df.columns:
-            score += (df["BMI"].fillna(0) >= 30).astype(float) * 0.20
-        if "Glucose" in df.columns:
-            score += (df["Glucose"].fillna(0) >= 126).astype(float) * 0.15
-        if "ALT" in df.columns:
-            score += (df["ALT"].fillna(0) >= 40).astype(float) * 0.15
-        score += np.random.uniform(0, 0.2, len(df))
-        df[TARGET] = (score >= np.percentile(score, 75)).astype(int)
+        raise ValueError(
+            f"Missing required target column '{TARGET}' in {data_path}. "
+            "Provide clinical NAFLD labels before running the pipeline."
+        )
 
     df.dropna(subset=[TARGET], inplace=True)
 
@@ -240,10 +239,22 @@ def train_all(Xtr, Xte, ytr, yte, preprocessor):
     Xte_p = preprocessor.transform(Xte)
 
     # SMOTE on training set only
-    sm = SMOTE(random_state=SEED)
-    Xtr_s, ytr_s = sm.fit_resample(Xtr_p, ytr)
-    print(f"  After SMOTE  : {Xtr_s.shape[0]} samples (balanced)")
-    show_class_dist(ytr_s, "Train+SMOTE")
+    min_class_size = ytr.value_counts().min()
+    smote_enabled = min_class_size > 1
+    smote_k = max(1, min(5, int(min_class_size) - 1)) if smote_enabled else 1
+    if smote_enabled:
+        try:
+            sm = SMOTE(random_state=SEED, k_neighbors=smote_k)
+            Xtr_s, ytr_s = sm.fit_resample(Xtr_p, ytr)
+            print(f"  After SMOTE  : {Xtr_s.shape[0]} samples (balanced), k={smote_k}")
+            show_class_dist(ytr_s, "Train+SMOTE")
+        except Exception as e:
+            print(f"  [WARNING] SMOTE failed: {e}. Using original training data.")
+            Xtr_s, ytr_s = Xtr_p, ytr
+            smote_enabled = False
+    else:
+        print("  [WARNING] Minority class too small for SMOTE. Using original training data.")
+        Xtr_s, ytr_s = Xtr_p, ytr
 
     cv = StratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=SEED)
     models = get_models()
@@ -252,8 +263,15 @@ def train_all(Xtr, Xte, ytr, yte, preprocessor):
     for i, (name, clf) in enumerate(models.items(), 1):
         tag = f"[{i:2d}/24]"
         try:
-            # 5-fold CV on training data
-            cvr = cross_validate(clf, Xtr_s, ytr_s, cv=cv,
+            # 5-fold CV with SMOTE fit only on each training fold.
+            if smote_enabled:
+                cv_estimator = ImbPipeline([
+                    ("smote", SMOTE(random_state=SEED, k_neighbors=smote_k)),
+                    ("classifier", clf),
+                ])
+            else:
+                cv_estimator = clf
+            cvr = cross_validate(cv_estimator, Xtr_p, ytr, cv=cv,
                                  scoring={"acc": "accuracy", "auc": "roc_auc"},
                                  n_jobs=-1, error_score="raise")
             cv_acc = cvr["test_acc"].mean()
@@ -280,6 +298,7 @@ def train_all(Xtr, Xte, ytr, yte, preprocessor):
 
         except Exception as e:
             print(f"  {tag} {name:<32s}  FAILED  ({e})")
+            fitted[name] = None
             rows.append({"Model": name, **{k: np.nan for k in
                 ["CV Accuracy","CV ROC-AUC","Test Accuracy",
                  "Precision","Recall","F1-score","Test ROC-AUC"]}})
@@ -287,13 +306,23 @@ def train_all(Xtr, Xte, ytr, yte, preprocessor):
     # ── Model 24: Voting Classifier (top 3 by CV ROC-AUC) ─────────────
     print(f"\n  [24/24] Building Voting Classifier (top 3 CV models) ...")
     tmp = pd.DataFrame(rows).dropna(subset=["CV ROC-AUC"])
-    top3 = tmp.nlargest(3, "CV ROC-AUC")["Model"].tolist()
+    top3 = (tmp
+            .sort_values(["CV ROC-AUC", "Test ROC-AUC", "Model"],
+                         ascending=[False, False, True])
+            .head(3)["Model"].tolist())
     print(f"         → {top3}")
 
     estimators = [(n, fitted[n]) for n in top3 if n in fitted]
     vc = VotingClassifier(estimators=estimators, voting="soft", n_jobs=-1)
     try:
-        cvr = cross_validate(vc, Xtr_s, ytr_s, cv=cv,
+        if smote_enabled:
+            vc_cv_estimator = ImbPipeline([
+                ("smote", SMOTE(random_state=SEED, k_neighbors=smote_k)),
+                ("classifier", vc),
+            ])
+        else:
+            vc_cv_estimator = vc
+        cvr = cross_validate(vc_cv_estimator, Xtr_p, ytr, cv=cv,
                              scoring={"acc":"accuracy","auc":"roc_auc"},
                              n_jobs=-1)
         vc.fit(Xtr_s, ytr_s)
@@ -392,11 +421,14 @@ def plot_importances(fitted, feat_names):
         if mdl is None:
             continue
         imp = mdl.feature_importances_
-        n   = min(len(feat_names), len(imp))
-        idx = np.argsort(imp[:n])[::-1][:15]
+        n = min(len(feat_names), len(imp))
+        if len(imp) != len(feat_names):
+            print(f"  [WARNING] {name}: feature name/importance mismatch ({len(feat_names)} vs {len(imp)}). Truncating to {n}.")
+        imp_use = imp[:n]
+        idx = np.argsort(imp_use)[::-1][:15]
 
         plt.figure(figsize=(10, 6))
-        sns.barplot(x=imp[idx],
+        sns.barplot(x=imp_use[idx],
                     y=[feat_names[i] for i in idx],
                     palette="viridis")
         plt.title(f"Top 15 Features — {name}",
@@ -592,6 +624,13 @@ def main():
 
     # 1  Load
     X, y = load_data()
+    if len(X) < 100:
+        raise ValueError(f"Dataset too small ({len(X)} rows). Need at least 100 rows.")
+    min_class = y.value_counts().min()
+    if min_class < N_FOLDS:
+        raise ValueError(
+            f"Minority class too small for {N_FOLDS}-fold CV (found {min_class} samples)."
+        )
 
     # 2  Preprocessing setup
     print("\n" + "=" * 72)
