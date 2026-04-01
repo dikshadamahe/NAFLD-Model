@@ -187,7 +187,11 @@ def handle_missing_values(df):
     for col in numeric_cols:
         if df[col].isnull().any():
             median_val = df[col].median()
-            df[col] = df[col].fillna(median_val)
+            if pd.isna(median_val):
+                print(f"  [WARNING] Column '{col}' is entirely NaN. Dropping column.")
+                df = df.drop(columns=[col])
+            else:
+                df[col] = df[col].fillna(median_val)
 
     missing_after = df.isnull().sum().sum()
     print(f"\n  Total missing values after cleaning: {missing_after}")

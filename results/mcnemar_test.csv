@@ -1,2 +1,2 @@
 Model_1,Model_2,Chi2,p_value,Significant,b (M1✓ M2✗),c (M1✗ M2✓)
-Random Forest,Gradient Boosting,3.2,0.073638270120303,False,29,16
+AdaBoost,Voting Classifier,0.017241379310344827,0.8955329031670437,False,28,30
