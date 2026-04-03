@@ -1,2 +1,2 @@
-Model_1,Model_2,Chi2,p_value,Significant,b (M1✓ M2✗),c (M1✗ M2✓)
-Random Forest,Gradient Boosting,3.2,0.073638270120303,False,29,16
+Model_1,Model_2,Chi2_corrected,p_value,Significant,b,c,note
+AdaBoost,Voting Classifier,1.694915254237288,0.1929542957690773,False,24,35,Edwards continuity-corrected McNemar statistic

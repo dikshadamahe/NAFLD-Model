@@ -1,18 +1,20 @@
-Classification Report — Random Forest
+Classification Report — AdaBoost
 ==================================================
               precision    recall  f1-score   support
 
-    No NAFLD       0.94      0.91      0.93       640
-       NAFLD       0.76      0.84      0.80       213
+    No NAFLD       0.97      0.85      0.91       640
+       NAFLD       0.68      0.92      0.78       213
 
-    accuracy                           0.89       853
-   macro avg       0.85      0.87      0.86       853
-weighted avg       0.90      0.89      0.89       853
+    accuracy                           0.87       853
+   macro avg       0.83      0.89      0.85       853
+weighted avg       0.90      0.87      0.88       853
 
 
-Sensitivity (Recall) : 0.8404
-Specificity          : 0.9094
-Precision (PPV)      : 0.7553
-NPV                  : 0.9448
-F1-score             : 0.7956
-Accuracy             : 0.8921
+Confusion Matrix Counts : TP=197, FP=93, FN=16, TN=547, Total=853
+Accuracy Check          : (TP+TN)/Total = (197+547)/853 = 0.8722
+Sensitivity (Recall) : 0.9249
+Specificity          : 0.8547
+Precision (PPV)      : 0.6793
+NPV                  : 0.9716
+F1-score             : 0.7833
+Accuracy             : 0.8722
